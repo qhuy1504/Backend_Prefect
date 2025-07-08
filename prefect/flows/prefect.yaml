@@ -1,0 +1,17 @@
+name: my-job-app-project
+prefect-version: 3.x         
+build: null
+push: null
+
+deployments:
+  - name: entrypoint_dynamic_job
+    description: A flow running on Docker with Dask.
+    entrypoint: my_flows.py:multi_task_job_flow
+
+    work_pool:
+      name: local-process-pool
+      work_pool_type: process   
+
+    pull:
+      - prefect.filesystems.LocalFileSystem:
+          basepath: .
