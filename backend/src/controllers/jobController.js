@@ -717,7 +717,7 @@ ORDER BY jt.execution_order ASC`,
         if (!deploymentId) {
             throw new Error('Failed to create Prefect deployment.');
         }
-
+        await new Promise(resolve => setTimeout(resolve, 5000)); 
         // --- BƯỚC 3: TRIGGER FLOW RUN ---
         const flowResponse = await triggerPrefectFlow(deploymentId, {
             jobId: parseInt(jobId, 10),
