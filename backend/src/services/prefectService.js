@@ -1,5 +1,7 @@
 // prefectService.js
 import axios from 'axios';
+import dotenv from 'dotenv';
+dotenv.config(); // Đảm bảo biến môi trường được nạp
 
 import fetch from 'node-fetch';
 

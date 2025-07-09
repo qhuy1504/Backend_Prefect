@@ -2,7 +2,11 @@ import pool from '../db.js';
 import crypto from 'crypto';
 import { triggerPrefectFlow, upsertConcurrencyLimitForTag, upsertVariable } from '../services/prefectService.js';
 import axios from 'axios';
-const PREFECT_API_URL = process.env.PREFECT_API_URL || "http://localhost:4200/api";
+import dotenv from 'dotenv';
+dotenv.config();
+
+const PREFECT_API_URL = process.env.PREFECT_API_URL;
+console.log(`Using Prefect API URL trong jobcontroller: ${PREFECT_API_URL}`);
 
 // Tạo 1 job mới với nhiều task
 export const createJobWithTasks = async (req, res) => {
@@ -537,7 +541,7 @@ export const deleteJobTask = async (req, res) => {
 
 export const createPrefectDeployment = async ({ flow_id, name, tags = [], parameters = {}, schedules = [] }) => {
     const prefectApiUrl =
-        process.env.PREFECT_API_URL || "http://localhost:4200/api";
+        process.env.PREFECT_API_URL;
 
     if (!flow_id || !name) {
         throw new Error("flow_id và name là bắt buộc");
@@ -598,7 +602,7 @@ export const createPrefectDeployment = async ({ flow_id, name, tags = [], parame
     return data;
 };
 const fetchFlowIdByName = async (flowName) => {
-    const PREFECT_API_URL = process.env.PREFECT_API_URL || 'http://localhost:4200/api';
+    const PREFECT_API_URL = process.env.PREFECT_API_URL;
 
     const res = await axios.post(`${PREFECT_API_URL}/flows/filter`, {
         flows: { name: { any_: [flowName] } },
@@ -759,7 +763,7 @@ export const getFlowRunStatus = async (req, res) => {
     const { flow_run_id } = req.params;
 
 
-    const PREFECT_API_URL = process.env.PREFECT_API_URL || "http://localhost:4200/api";
+    const PREFECT_API_URL = process.env.PREFECT_API_URL;
     const client = await pool.connect();
 
     try {
