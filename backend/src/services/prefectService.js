@@ -153,6 +153,7 @@ export const getFlowRunLogs = async (flowRunId) => {
  */
 export async function upsertVariable(name, value) {
     // 1. Tìm chính xác theo name (khuyến nghị)
+    console.log(`Upserting variable with name "${name}" and value:`, value);
     try {
         const { data: found } = await axios.post(
             `${PREFECT_API_URL}/variables/filter`,
