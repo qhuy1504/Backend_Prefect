@@ -13,8 +13,8 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
-# Expose port (ví dụ 3000 hoặc cổng bạn chọn)
-EXPOSE 3000
+
+EXPOSE 3001
 
 # Start the application
 CMD ["node", "src/index.js"]

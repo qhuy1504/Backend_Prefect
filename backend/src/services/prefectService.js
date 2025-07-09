@@ -3,7 +3,8 @@ import axios from 'axios';
 
 import fetch from 'node-fetch';
 
-const PREFECT_API_URL = process.env.PREFECT_API_URL || 'http://localhost:4200/api';
+const PREFECT_API_URL = process.env.PREFECT_API_URL;
+console.log(`Using Prefect API URL: ${PREFECT_API_URL}`);
 
 export const upsertConcurrencyLimitForTag = async (tag, concurrencyValue) => {
     // Endpoint để xóa limit theo tag
@@ -75,7 +76,8 @@ export const upsertConcurrencyLimitForTag = async (tag, concurrencyValue) => {
  */
 export const triggerPrefectFlow = async (deploymentId, parameters, tags = []) => {
     // Đọc địa chỉ API của Prefect từ biến môi trường
-    const prefectApiUrl = process.env.PREFECT_API_URL || 'http://localhost:4200/api';
+    const prefectApiUrl = process.env.PREFECT_API_URL;
+    console.log(`Using Prefect API URL: ${prefectApiUrl}`);
 
     // Kiểm tra xem deploymentId có được truyền vào không
     if (!deploymentId) {
