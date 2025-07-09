@@ -1,21 +1,30 @@
+import os
 import time
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from prefect import flow, task, get_run_logger
 from prefect.task_runners import ThreadPoolTaskRunner
-from typing import List, Dict, TypedDict
+from typing import List, Dict
+from typing_extensions import TypedDict
 from prefect.variables import Variable
 from datetime import datetime
 from prefect.states import State
 import json
 from typing import List, Optional
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=".env")
+# Define a TypedDict for task information
 
 class TaskDict(TypedDict):
     name: str
     script_type: str
     script_content: str
 
-DATABASE_URL = "postgresql://postgres:gRkWEparPPhyoBSwqZCBvFQRTEPYSILc@maglev.proxy.rlwy.net:25007/railway"
+DATABASE_URL = os.getenv("DATABASE_URL")
+print(f"Using DATABASE_URL: {DATABASE_URL}")
+if not DATABASE_URL:
+    raise EnvironmentError("Missing DATABASE_URL in environment or .env file")
 
 
 @task(name="Execute Single Script", retries=2, retry_delay_seconds=10)
@@ -179,13 +188,14 @@ def multi_task_job_flow(jobId: int):
 
 
 if __name__ == "__main__":
-    import os
-    os.environ.setdefault(
-        "PREFECT_API_URL",
-        "http://127.0.0.1:4200/api"     
-    )
+    prefect_url = os.getenv("PREFECT_API_URL")
+    print(f"Using Prefect API URL: {prefect_url}")
+    if not prefect_url:
+        raise EnvironmentError("Missing PREFECT_API_URL in environment or .env file")
+
+    os.environ.setdefault("PREFECT_API_URL", prefect_url)
 
     multi_task_job_flow.serve(
         name="entrypoint_dynamic_job",   
-        tags=["dynamic-job"]             
+        tags=["dynamic-job"]
     )

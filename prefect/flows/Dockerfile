@@ -1,14 +1,16 @@
-# Bắt đầu từ image nền của Prefect
-FROM prefecthq/prefect:3-python3.13
+FROM python:3.11-slim
 
-# Đặt thư mục làm việc
-WORKDIR /opt/prefect/flows
+WORKDIR /app
 
-# Copy file requirements trước để tận dụng cache
-COPY requirements.txt .
-
-# Cài đặt các thư viện
-RUN pip install -r requirements.txt
-
-# Copy toàn bộ code còn lại
+# Copy toàn bộ mã nguồn (bao gồm .env, my_flows.py)
 COPY . .
+
+# Cài thư viện
+RUN pip install --no-cache-dir -r requirements.txt || true
+
+# Cho phép chạy script
+RUN chmod +x ./start.sh
+
+EXPOSE 4200
+
+CMD ["./start.sh"]

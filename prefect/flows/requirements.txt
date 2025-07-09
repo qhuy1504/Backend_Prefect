@@ -2,3 +2,5 @@ prefect==3.4.4
 prefect-docker
 psycopg2-binary
 prefect-dask
+python-dotenv
+typing_extensions
