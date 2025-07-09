@@ -583,7 +583,7 @@ export const createPrefectDeployment = async ({ flow_id, name, tags = [], parame
         flow_id,
         work_pool_name: "local-process-pool",
         entrypoint: "my_flows.py:multi_task_job_flow",
-        path: "/app/prefect/flows",
+        path: "/app",
         tags,
         parameter_openapi_schema: parameterSchema,
         enforce_parameter_schema: false,
