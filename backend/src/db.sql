@@ -141,3 +141,123 @@ CREATE TABLE table_size (
     size_mb INTEGER,
     data_date DATE
 );
+
+
+/*
+-- USERS
+*/
+CREATE TABLE users
+(
+  id SERIAL PRIMARY KEY,
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  name TEXT,
+  avatar TEXT,
+  email TEXT UNIQUE NOT NULL
+);
+
+/*
+-- ROLES
+*/
+CREATE TABLE roles
+(
+  id SERIAL PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL
+);
+
+/*
+-- GROUPS
+*/
+CREATE TABLE groups
+(
+  id SERIAL PRIMARY KEY,
+  name TEXT UNIQUE NOT NULL
+);
+
+/*
+-- MENUS
+*/
+CREATE TABLE menus
+(
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  path TEXT NOT NULL
+);
+
+/*
+-- USER-GROUP
+*/
+CREATE TABLE user_groups
+(
+  user_id INT REFERENCES users(id),
+  group_id INT REFERENCES groups(id),
+  PRIMARY KEY (user_id, group_id)
+);
+
+/*
+-- GROUP-ROLE
+*/
+CREATE TABLE group_roles
+(
+  group_id INT REFERENCES groups(id),
+  role_id INT REFERENCES roles(id),
+  PRIMARY KEY (group_id, role_id)
+);
+
+/*
+-- ROLE-MENU
+*/
+CREATE TABLE role_menus
+(
+  role_id INT REFERENCES roles(id),
+  menu_id INT REFERENCES menus(id),
+  PRIMARY KEY (role_id, menu_id)
+);
+
+-- Thêm dữ liệu mẫu:
+INSERT INTO roles
+  (name)
+VALUES
+  ('admin'),
+  ('viewer');
+INSERT INTO groups
+  (name)
+VALUES
+  ('dev'),
+  ('manager');
+INSERT INTO menus
+  (name, path)
+VALUES
+  ('Dashboard', '/dashboard'),
+  ('Logs', '/logs');
+
+-- Phân quyền mẫu:
+-- user1 thuộc group 'dev', group 'dev' có role 'viewer', role 'viewer' xem được /logs
+
+INSERT INTO roles
+  (name)
+VALUES
+  ('admin'),
+  ('user');
+
+
+INSERT INTO groups
+  (name)
+VALUES
+  ('Phòng CNTT'),
+  ('Phòng Kế toán'),
+  ('Phòng Giao dịch'),
+  ('Phòng Kiểm toán nội bộ'),
+  ('Phòng Chăm sóc khách hàng');
+
+INSERT INTO menus
+  (name, path)
+VALUES
+  ('Dashboard', '/dashboard'),
+  ('Quản lý người dùng', '/users'),
+  ('Quản lý Job', '/jobs/new'),
+  ('Danh sách Job', '/jobs'),
+  ('Danh sách Bảng', '/tablelist'),
+  ('Profile', '/profile')
+
+  ALTER TABLE users ADD COLUMN role_id INT REFERENCES roles(id);
