@@ -11,8 +11,9 @@ import aiRoutes from './routes/aiRoutes.js';
 import 'dotenv/config'; 
 
 const app = express();
-app.use(express.json()); //  xử lý application/json
-app.use(express.urlencoded({ extended: true })); // xử lý form urlencoded
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 
 app.use(cors({
     origin: '*', // tất cả origin

@@ -1,32 +1,35 @@
-import fetch from "node-fetch";
+// controllers/aiController.js
+import OpenAI from 'openai';
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-console.log("Gemini API Key:", GEMINI_API_KEY);
+const openai = new OpenAI({
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKey: process.env.OPENROUTER_API_KEY, // đặt key trong .env
+    defaultHeaders: {
+        // Không bắt buộc nếu bạn không có site
+        // "HTTP-Referer": "https://your-site.com",
+        // "X-Title": "Your Site Name"
+    },
+});
 
-export const askGemini = async (req, res) => {
+export const askAI = async (req, res) => {
     try {
-        const { prompt } = req.body;
-        console.log("Received prompt:", prompt);
+        const { messages } = req.body;
 
-        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key=${GEMINI_API_KEY}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }]
-            })
-        });
-
-        const result = await geminiRes.json();
-        console.log("Gemini response:", result);
-
-        if (!geminiRes.ok) {
-            return res.status(400).json({ error: result.error || "Gemini API error" });
+        if (!messages || messages.length === 0) {
+            return res.status(400).json({ error: "Messages không được để trống." });
         }
 
-        const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "Không có phản hồi";
-        res.json({ text });
+        const completion = await openai.chat.completions.create({
+            model: "openai/gpt-3.5-turbo",
+            messages,
+        });
+
+        const reply = completion.choices?.[0]?.message?.content || "Không có phản hồi từ AI.";
+        console.log("AI Reply:", reply);
+        res.json({ text: reply });
+
     } catch (err) {
-        console.error("Gemini error:", err);
-        res.status(500).json({ error: "Lỗi server Gemini" });
+        console.error("Lỗi gọi OpenRouter:", err);
+        res.status(500).json({ error: "Lỗi gọi OpenRouter." });
     }
 };

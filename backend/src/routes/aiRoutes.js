@@ -1,9 +1,9 @@
 // routes/aiRoutes.js
 import express from "express";
-import { askGemini } from "../controllers/aiController.js";
+import { askAI } from "../controllers/aiController.js";
 
 const router = express.Router();
 
-router.post("/ask", askGemini);
+router.post("/ask-ai", askAI);
 
 export default router;
