@@ -1,5 +1,6 @@
 // controllers/aiController.js
 import OpenAI from 'openai';
+import {askLlamaViaMCP } from '../services/aiOllamaService.js';
 
 const openai = new OpenAI({
     baseURL: "https://openrouter.ai/api/v1",
@@ -20,7 +21,7 @@ export const askAI = async (req, res) => {
         }
 
         const completion = await openai.chat.completions.create({
-            model: "openai/gpt-3.5-turbo",
+            model: "google/gemini-2.0-flash-exp:free",
             messages,
         });
 
@@ -33,3 +34,18 @@ export const askAI = async (req, res) => {
         res.status(500).json({ error: "Lỗi gọi OpenRouter." });
     }
 };
+
+
+
+export const askAIWithOllama = async (req, res) => {
+    const { prompt } = req.body;
+    console.log("Received prompt:", prompt);
+    try {
+        const response = await askLlamaViaMCP(prompt);
+        console.log("Ollama response:", response);
+        res.json({ text: response });
+    } catch (error) {
+        res.status(500).json({ error: 'AI error', detail: error.message });
+    }
+};
+

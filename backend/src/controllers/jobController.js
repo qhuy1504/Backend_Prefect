@@ -556,7 +556,7 @@ export const createPrefectDeployment = async ({ flow_id, name, tags = [], parame
                 items: { $ref: "#/components/schemas/TaskDict" }
             },
             concurrent: { type: "integer" },
-            db_url: { type: "string", default: "postgresql://postgres:123456@localhost:5432/myappdb" }
+            db_url: { type: "string", default: "postgresql://postgres:123456@localhost:5432/appjob" }
         },
         required: ["jobId", "tasks", "concurrent"],
         components: {

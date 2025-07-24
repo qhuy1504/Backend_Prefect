@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   openldap:
@@ -15,16 +15,62 @@ services:
       - ldap-data:/var/lib/ldap
       - ldap-config:/etc/ldap/slapd.d
 
-  phpldapadmin:
-    image: osixia/phpldapadmin:0.9.0
-    container_name: phpldapadmin
-    environment:
-      PHPLDAPADMIN_LDAP_HOSTS: openldap
-    ports:
-      - "6443:443"
+  prefect:
+    build:
+      context: ./prefect/flows
+    container_name: prefect
     depends_on:
       - openldap
+    environment:
+      PREFECT_API_URL: "http://localhost:4200/api"
+    ports:
+      - "4200:4200"
+
+  mcp_tools:
+    build:
+      context: ./mcp_tools
+    container_name: mcp_tools
+    depends_on:
+      - openldap
+      - prefect
+    ports:
+      - "5001:5001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  backend:
+    build:
+      context: ./backend
+    container_name: backend
+    depends_on:
+      - openldap
+      - prefect
+      - mcp_tools
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+
+  vision_ui:
+    build:
+      context: ./vision-ui-dashboard-react
+    container_name: vision_ui
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
 
 volumes:
   ldap-data:
   ldap-config:
+  pgdata:

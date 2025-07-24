@@ -6,7 +6,7 @@ export const getTableList = async (req, res) => {
     try {
         const result = await pool.query(`
         SELECT db_name, schema_name, table_name, scd_type,
-         to_char(data_date, 'YYYY-MM-DD') AS data_date
+          to_char(data_date::DATE, 'YYYY-MM-DD') AS data_date
   FROM table_list
   ORDER BY data_date DESC
       `);
@@ -21,7 +21,7 @@ export const getTableSize = async (req, res) => {
     try {
         const result = await pool.query(`
         SELECT database, schema_name, table_name, records, size_mb,
-                   to_char(data_date, 'YYYY-MM-DD') AS data_date
+                    to_char(data_date::DATE, 'YYYY-MM-DD') AS data_date
             FROM table_size
             ORDER BY data_date DESC
       `);
@@ -36,7 +36,7 @@ export const getTableEtlLog = async (req, res) => {
     try {
         const result = await pool.query(`
         SELECT database_name, schema_name, table_name, cnt_row, process_second, update_time,
-                   to_char(data_date, 'YYYY-MM-DD') AS data_date
+                    to_char(data_date::DATE, 'YYYY-MM-DD') AS data_date
             FROM table_etl_log
             ORDER BY data_date DESC
       `);
