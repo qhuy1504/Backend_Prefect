@@ -9,9 +9,102 @@ import os
 import pickle
 import json
 import re
+from dotenv import load_dotenv
+import requests
+import pandas as pd
+import time
+from datetime import datetime, timedelta
+from vnstock import Quote
+
+load_dotenv()
+OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
 embedding = OllamaEmbeddings(model="llama3", base_url="http://host.docker.internal:11434")
 llm = Ollama(model="llama3", base_url="http://host.docker.internal:11434")
+
+# Ví dụ danh sách ngân hàng và mã cổ phiếu
+BANK_SYMBOL_MAP = {
+    "vietcombank": "VCB",
+    "mb bank": "MBB",
+    "bidv": "BID",
+    "vietinbank": "CTG",
+    "techcombank": "TCB",
+    "vpbank": "VPB",
+    "tpbank": "TPB",
+    "acb": "ACB",
+    "sacombank": "STB",
+    "hdbank": "HDB",
+    "vib": "VIB",
+    "ocb": "OCB",
+    "bac a bank": "BAB",
+    "vietbank": "VBB",
+    "pg bank": "PGB",
+    "nam a bank": "NAB",
+    "bao viet bank": "BVB",
+    "lpbank": "LPB",            
+    "sea bank": "SSB",
+    "abbank": "ABB",
+    "kienlongbank": "KLB",
+    "shb": "SHB",
+    "eximbank": "EIB",
+    "viet a bank": "VAB"
+}
+
+
+
+
+
+def get_weather_open_meteo(city: str):
+    try:
+        geo_url = f"https://nominatim.openstreetmap.org/search?city={city}&format=json"
+        geo_response = requests.get(geo_url, headers={"User-Agent": "Mozilla/5.0"})
+
+        if geo_response.status_code != 200:
+            return f"Lỗi khi truy cập geo API: {geo_response.status_code}"
+
+        geo_res = geo_response.json()
+        if not geo_res:
+            return "Không tìm thấy vị trí."
+
+        lat = geo_res[0]['lat']
+        lon = geo_res[0]['lon']
+        print(f"Vị trí địa lý: {lat}, {lon}")
+
+        weather_url = (
+            f"https://api.open-meteo.com/v1/forecast?"
+            f"latitude={lat}&longitude={lon}&current_weather=true"
+        )
+        weather_response = requests.get(weather_url)
+        if weather_response.status_code != 200:
+            return f"Lỗi khi truy cập weather API: {weather_response.status_code}"
+
+        weather_res = weather_response.json()
+        current = weather_res["current_weather"]
+
+        return (
+            f"Thời tiết tại {city.capitalize()}:\n"
+            f"- Nhiệt độ: {current['temperature']}°C\n"
+            f"- Gió: {current['windspeed']} km/h\n"
+            f"- Thời gian: {current['time']}"
+        )
+    except Exception as e:
+        return f"Lỗi: {e}"
+
+
+
+def search_weather_tool(prompt: str):
+    # Dò thành phố trong chuỗi (đơn giản)
+    match = re.search(r"(?:ở|tại)\s+([A-Za-zÀ-Ỷà-ỷ\s]+)", prompt)
+    print(f"[DEBUG] Đang tìm kiếm thời tiết với prompt: {prompt}")
+    print(f"[DEBUG] Kết quả dò tìm thành phố: {match.group(1) if match else 'Không tìm thấy'}")
+    if match:
+        city = match.group(1).strip()
+        print(f"[INFO] Đang lấy thời tiết cho: {city}")
+        result = get_weather_open_meteo(city)
+        print(f"[INFO] Kết quả thời tiết: {result}")
+        return [{"matched_question": prompt, "score": 0.0, "answer": result}]
+    else:
+        return [{"matched_question": prompt, "score": 1.0, "answer": "Bạn vui lòng cung cấp tên thành phố để tra cứu thời tiết."}]
 
 
 def build_all_tools():
@@ -61,6 +154,106 @@ def append_data_and_rebuild(question: str, answer: str, tool_key: str):
         build_vectorstore(json_path, faiss_path, hash_path)
         print(f"[INFO] Đã cập nhật vectorstore cho {tool_key}")
 
+# Lấy dữ liệu cổ phiếu gần nhất cho ngày hôm nay
+def get_historical_price_data_filter(symbol, retries=3, delay=3):
+    today_str = datetime.today().strftime("%Y-%m-%d")
+    seven_days_ago = (datetime.today() - timedelta(days=7)).strftime("%Y-%m-%d")
+
+    for attempt in range(retries):
+        try:
+            quote = Quote(symbol=symbol, source='TCBS')
+            df = quote.history(start=seven_days_ago, end=today_str, interval='1D')
+
+            if df.empty:
+                return pd.DataFrame()
+
+            df['time'] = pd.to_datetime(df['time'])
+            df.set_index('time', inplace=True)
+            df.sort_index(inplace=True)
+
+            df_today = df[df.index.strftime('%Y-%m-%d') == today_str]
+            if df_today.empty:
+                return pd.DataFrame()
+
+            return df_today
+        except Exception as e:
+            print(f"Lỗi khi lấy dữ liệu ({attempt+1}/{retries}): {e}")
+            if attempt < retries - 1:
+                time.sleep(delay)
+            else:
+                return pd.DataFrame()
+# Hàm lấy thông tin giá cố phiếu ngân hàng hôm nay
+def get_historical_price_data_filter(symbol, retries=3, delay=3):
+    today_str = datetime.today().strftime("%Y-%m-%d")
+    seven_days_ago = (datetime.today() - timedelta(days=7)).strftime("%Y-%m-%d")
+
+    for attempt in range(retries):
+        try:
+            quote = Quote(symbol=symbol, source='TCBS')
+            df = quote.history(start=seven_days_ago, end=today_str, interval='1D')
+
+            if df.empty:
+                return pd.DataFrame()
+
+            df['time'] = pd.to_datetime(df['time'])
+            df.set_index('time', inplace=True)
+            df.sort_index(inplace=True)
+
+            df_today = df[df.index.strftime('%Y-%m-%d') == today_str]
+            if df_today.empty:
+                return pd.DataFrame()
+
+            return df_today
+        except Exception as e:
+            print(f"Lỗi khi lấy dữ liệu ({attempt+1}/{retries}): {e}")
+            if attempt < retries - 1:
+                time.sleep(delay)
+            else:
+                return pd.DataFrame()
+
+# Hàm chính lấy thông tin cổ phiếu ngân hàng
+def get_bank_stock_price(bank_name: str):
+    clean_bank = normalize_text(bank_name)
+    symbol = None
+
+    for name, code in BANK_SYMBOL_MAP.items():
+        if name in clean_bank:
+            symbol = code
+            break
+
+    if not symbol:
+        return f"Không tìm thấy mã cổ phiếu cho ngân hàng '{bank_name}'."
+
+    df_today = get_historical_price_data_filter(symbol)
+    if df_today.empty:
+        return f"Không có dữ liệu cổ phiếu cho {symbol} hôm nay."
+
+    row = df_today.iloc[-1]
+    open_price = row.get("open")
+    close_price = row.get("close")
+    high_price = row.get("high")
+    low_price = row.get("low")
+    volume = row.get("volume")
+
+    return (
+        f"Giá cổ phiếu của {bank_name.title()} ({symbol}) hôm nay:\n"
+        f"- Giá mở cửa: {open_price} VND\n"
+        f"- Giá đóng cửa: {close_price} VND\n"
+        f"- Giá cao nhất: {high_price} VND\n"
+        f"- Giá thấp nhất: {low_price} VND\n"
+        f"- Khối lượng giao dịch: {volume:,} cổ phiếu"
+    )
+    
+    
+def search_bank_stock_tool(prompt: str):
+    match = re.search(r"(giá .{0,10}cổ phiếu|giá trần)\s+(ngân hàng\s+)?([A-Za-zÀ-Ỷà-ỷ\s]+)", prompt.lower())
+    if match:
+        bank_name = match.group(3).strip()
+        print(f"[INFO] Truy vấn ngân hàng: {bank_name}")
+        result = get_bank_stock_price(bank_name)
+        return [{"matched_question": prompt, "score": 0.0, "answer": result}]
+    else:
+        return [{"matched_question": prompt, "score": 1.0, "answer": "Bạn vui lòng cung cấp tên ngân hàng cần tra giá cổ phiếu."}]
 
 
 
@@ -165,6 +358,9 @@ def search_vector(json_query: str, faiss_path: str, top_k: int = 3):
         }
         for doc, score in [lowest_score_result]
     ]
+    
+  
+    
 if __name__ == "__main__":
     print("Đang tiến hành build vectorstore cho tất cả tool...")
     build_all_tools()

@@ -1,0 +1,21 @@
+{
+  "frontend": {"REACT_APP_API_URL": "http://localhost:3001"},
+  "backend": {
+    "PREFECT_API_URL": "http://prefect:4200/api",
+    "JWT_SECRET": "d9f56eec243ab14831ac0e172fb02336035af5958321",
+    "CLOUDINARY_CLOUD_NAME": "dapvuniyx",
+    "CLOUDINARY_API_KEY": "249722262232287",
+    "CLOUDINARY_API_SECRET": "VFBfRVuGT-X64QFwowYnJA86ou0",
+    "EMAIL_FROM": "huu529816@gmail.com",
+    "EMAIL_PASSWORD": "ybdp scao jgkw aaio",
+    "OPENROUTER_API_KEY": "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"
+  },
+  "prefect_flows": {
+    "DATABASE_URL": "postgres://postgres:123456@postgres:5432/postgres",
+    "PREFECT_API_URL": "http://localhost:4200/api",
+    "PREFECT_UI_URL": "http://localhost:4200"
+  },
+  "mcp_tools": {
+    "OPENWEATHER_API_KEY": "4abb2cb5599ad9e23893209ad1c695b0"
+  }
+}

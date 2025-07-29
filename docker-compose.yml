@@ -60,7 +60,9 @@ services:
       - "3001:3001"
     environment:
       - NODE_ENV=development
-
+    volumes:
+      - ./env-config.json:/app/env-config.json
+      
   vision_ui:
     build:
       context: ./vision-ui-dashboard-react

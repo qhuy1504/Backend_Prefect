@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import aiRoutes from './routes/aiRoutes.js';
+import envConfigRoutes from "./routes/envConfig.route.js";
 // import dotenv from 'dotenv';
 // dotenv.config();
 import 'dotenv/config'; 
@@ -26,6 +27,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/import', importRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/env-config', envConfigRoutes);
 
 
 app.listen(3001, () => {

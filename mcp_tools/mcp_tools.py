@@ -1,5 +1,5 @@
 from vector_tool import search_vector
-from vector_tool import append_data_and_rebuild , search_duckduckgo
+from vector_tool import append_data_and_rebuild , search_duckduckgo, get_weather_open_meteo,search_weather_tool, search_bank_stock_tool
 import difflib
 
 
@@ -9,9 +9,8 @@ VECTOR_TOOLS = {
                  "VNINDEX", "volume", "tài chính", "thông tin", "giao dịch", 
                  "dữ liệu" , "sàn","hôm nay", "thế nào", "ngân hàng", "lãi suất", 
                  "lợi nhuận", "công ty", "doanh nghiệp", "tỷ giá", "tiền tệ"
-                 ],
-        "faiss": "./data/pkl/stock",
-        "search_fn": lambda query: search_vector(query, "./data/pkl/stock")
+                 ], 
+        "search_fn": lambda query: search_bank_stock_tool(query)
     },
     "nation": {
         "desc": ["biển số", "tỉnh", "thành phố", "đăng ký xe", "địa lý",
@@ -27,8 +26,17 @@ VECTOR_TOOLS = {
         "desc": ["lịch sử", "chiến tranh", "sự kiện", "năm", "cách mạng", "thế kỷ", "kiến thức", "tìm kiếm web"],
         "faiss": "./data/pkl/history",
         "search_fn": lambda query: search_vector(query, "./data/pkl/history")
+    },
+    "weather": {
+        "desc": ["thời tiết", "trời", "nhiệt độ", "mưa'", "gió", "ẩm", "nắng",
+                 "bao nhiêu độ", "thời tiết hôm nay", "hôm nay trời thế nào",
+                 "dự báo thời tiết", "thời tiết ở", "thành phố", "nhiệt độ hiện tại",],
+        "search_fn": lambda query: search_weather_tool(query)
     }
 }
+
+
+
 
 
 def select_vector_tool(prompt: str) -> str:
