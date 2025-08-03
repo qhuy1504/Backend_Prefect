@@ -21,6 +21,8 @@ OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
 embedding = OllamaEmbeddings(model="llama3", base_url="http://host.docker.internal:11434")
 llm = Ollama(model="llama3", base_url="http://host.docker.internal:11434")
+# embedding = OllamaEmbeddings(model="llama3")
+# llm = Ollama(model="llama3")
 
 # Ví dụ danh sách ngân hàng và mã cổ phiếu
 BANK_SYMBOL_MAP = {

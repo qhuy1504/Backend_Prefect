@@ -25,6 +25,8 @@ services:
       PREFECT_API_URL: "http://localhost:4200/api"
     ports:
       - "4200:4200"
+    volumes:
+      - ./prefect/flows:/prefect
 
   mcp_tools:
     build:
@@ -35,6 +37,8 @@ services:
       - prefect
     ports:
       - "5001:5001"
+    volumes:
+      - ./mcp_tools:/mcp_tools
     extra_hosts:
       - "host.docker.internal:host-gateway"
   postgres:
@@ -60,8 +64,15 @@ services:
       - "3001:3001"
     environment:
       - NODE_ENV=development
+    env_file:
+      - ./backend/.env
     volumes:
-      - ./env-config.json:/app/env-config.json
+      - ./env-config.json:/app
+      - ./backend/app:/app
+      - ./vision-ui-dashboard-react:/vision_ui
+      - ./prefect/flows:/prefect
+      - ./mcp_tools:/mcp_tools
+
       
   vision_ui:
     build:
@@ -71,6 +82,8 @@ services:
       - backend
     ports:
       - "3000:80"
+    volumes:
+      - ./vision-ui-dashboard-react:/vision_ui
 
 volumes:
   ldap-data:

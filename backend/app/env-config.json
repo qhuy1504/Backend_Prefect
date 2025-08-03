@@ -1,0 +1,85 @@
+{
+  "frontend": [
+    {
+      "key": "REACT_APP_API_URL",
+      "value": "http://localhost:3001",
+      "id": "1"
+    },
+    {
+      "key": "REACT_APP_ADMIN_API_KEY",
+      "value": "QHd9f56eec243ab14831ac0e172fb02336035af5958321",
+      "id": "15"
+    }
+  ],
+  "backend": [
+    {
+      "key": "PREFECT_API_URL",
+      "value": "http://localhost:4200/api",
+      "id": "2"
+    },
+    {
+      "key": "JWT_SECRET",
+      "value": "d9f56eec243ab14831ac0e172fb02336035af5958321",
+      "id": "3"
+    },
+    {
+      "key": "CLOUDINARY_CLOUD_NAME",
+      "value": "dapvuniyx",
+      "id": "4"
+    },
+    {
+      "key": "CLOUDINARY_API_KEY",
+      "value": "249722262232287",
+      "id": "5"
+    },
+    {
+      "key": "CLOUDINARY_API_SECRET",
+      "value": "VFBfRVuGT-X64QFwowYnJA86ou0",
+      "id": "6"
+    },
+    {
+      "key": "EMAIL_FROM",
+      "value": "huu529816@gmail.com",
+      "id": "7"
+    },
+    {
+      "key": "EMAIL_PASSWORD",
+      "value": "ybdp scao jgkw aaio",
+      "id": "8"
+    },
+    {
+      "key": "OPENROUTER_API_KEY",
+      "value": "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",
+      "id": "9"
+    },
+    {
+      "key": "ADMIN_API_KEY",
+      "value": "QHd9f56eec243ab14831ac0e172fb02336035af5958321",
+      "id": "14"
+    }
+  ],
+  "prefect_flows": [
+    {
+      "key": "DATABASE_URL",
+      "value": "postgres://postgres:123456@localhost:5432/appjob",
+      "id": "10"
+    },
+    {
+      "key": "PREFECT_API_URL",
+      "value": "http://localhost:4200/api",
+      "id": "11"
+    },
+    {
+      "key": "PREFECT_UI_URL",
+      "value": "http://localhost:4200",
+      "id": "12"
+    }
+  ],
+  "mcp_tools": [
+    {
+      "key": "OPENWEATHER_API_KEY",
+      "value": "4abb2cb5599ad9e23893209ad1c695b0",
+      "id": "13"
+    }
+  ]
+}

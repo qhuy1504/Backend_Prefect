@@ -1,20 +1,20 @@
-# Dockerfile
-FROM node:20.16.0
+# Use official Python image
+FROM python:3.11-slim
 
 # Set working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy requirements.txt into the container
+COPY requirements.txt .
 
-# Install dependencies
-RUN npm install
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
+# Copy all backend source code into the container
 COPY . .
 
-
+# Expose the port your app runs on (thay đổi nếu khác)
 EXPOSE 3001
 
-# Start the application
-CMD ["node", "src/index.js"]
+# Command to run the application
+CMD ["python", "main.py"]

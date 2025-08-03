@@ -167,7 +167,7 @@ def multi_task_job_flow(jobId: int):
     try:
         concurrent = int(Variable.get(f"job_{jobId}_concurrent"))
         tasks_json = Variable.get(f"job_{jobId}_tasks")
-        tasks = json.loads(tasks_json)
+        tasks = tasks_json
     except Exception as e:
         logger.error(f"Lỗi khi lấy variables cho job-{jobId}: {e}")
         raise
