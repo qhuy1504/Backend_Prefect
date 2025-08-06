@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+langgraph
+langchain
+langchain_mcp_adapters
+mistralai
+fastmcp
