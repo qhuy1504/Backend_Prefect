@@ -151,31 +151,6 @@ def text_transform(prompt: str) -> str:
 
 
 
-
-
-
-def list_directory(directory_path: str = ".") -> str:
-    """Liệt kê các tệp và thư mục trong một thư mục. Mặc định là thư mục hiện tại."""
-    try:
-        items = os.listdir(directory_path)
-        if not items:
-            return f"Thư mục '{directory_path}' trống."
-        
-        files = [item for item in items if os.path.isfile(os.path.join(directory_path, item))]
-        folders = [item for item in items if os.path.isdir(os.path.join(directory_path, item))]
-
-        result = f"Nội dung của '{directory_path}':\n"
-        if folders:
-            result += f"Thư mục ({len(folders)}): {', '.join(folders)}\n"
-        if files:
-            result += f"Tệp ({len(files)}): {', '.join(files)}"
-
-        return result
-    except FileNotFoundError:
-        return f"Error: Directory '{directory_path}' not found."
-    except PermissionError:
-        return f"Error: Permission denied to access '{directory_path}'."
-
 def convert_temperature(temperature: float, from_unit: str, to_unit: str) -> str:
     """Chuyển đổi nhiệt độ giữa Celsius, Fahrenheit, và Kelvin."""
     from_unit = from_unit.lower()
