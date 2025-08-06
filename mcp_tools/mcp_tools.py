@@ -35,10 +35,6 @@ VECTOR_TOOLS = {
     }
 }
 
-
-
-
-
 def select_vector_tool(prompt: str) -> str:
     prompt = prompt.lower()
     for key, tool in VECTOR_TOOLS.items():
@@ -47,9 +43,6 @@ def select_vector_tool(prompt: str) -> str:
                 print(f"[DEBUG] Matched keyword '{keyword}' in tool '{key}'")
                 return key
     return None
-
-
-
 def search_vector_store(query: str) -> str:
     selected_tool = select_vector_tool(query)
     print(f"[INFO] Selected tool: {selected_tool}")
@@ -84,6 +77,3 @@ def search_vector_store(query: str) -> str:
         return "\n\n".join(fallback_results)
     
     return "Không tìm thấy kết quả."
-
-
-
